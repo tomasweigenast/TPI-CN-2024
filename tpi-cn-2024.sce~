@@ -207,25 +207,8 @@ endfunction
         (4) Calcular los costos de calefacción y refrigeración (2.5 Puntos)
 *******************************************/
 
-
-function Integral = calcular_calefaccion_total()
-    paso = 0.001
-    x = 0:paso:24
-    X = []
-    for i = 0:paso:24
-        X = [X, Q_calef(i)]
-    end
-    Integral = inttrap(x,X)
-endfunction
-
-function Integral = calcular_refrigeracion_total()
-    paso = 0.001
-    x = 0:paso:24
-    X = []
-    for i = 0:paso:24
-        X = [X, Q_refri(i)]
-    end
-    Integral = inttrap(x,X)
+function Calor_adicional = calcular_calores(t)
+    intg()
 endfunction
 
 function calcular_temperatura_interior()
@@ -240,6 +223,9 @@ function calcular_temperatura_interior()
         t = [t, t($)+paso]
         T = [T, Ti]
     end
+    
+    disp("t: " +string(t));
+    disp("T: " +string(T));
     
     plot(t,T)
 endfunction
@@ -268,14 +254,3 @@ endfunction
 
 calcular_temperatura_interior()
 calcular_temperatura_exterior()
-
-refri_total = calcular_refrigeracion_total()
-calef_total = calcular_calefaccion_total()
-disp("Refrigeración total: "+string(refri_total))
-disp("Calefacción total: "+string(calef_total))
-
-costo_refri = refri_total * precioEnergiaRefrigeracion
-costo_calef = calef_total * precioEnergiaCalefaccion
-disp("Costo refrigeración: $"+string(costo_refri))
-disp("Costo calefacción: $"+string(costo_calef))
-disp("Costo total: $"+string(costo_refri+costo_calef))
