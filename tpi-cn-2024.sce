@@ -67,8 +67,6 @@ function Pc = potenciaCalefaccionUnitaria(t)
         m2 de edificio, en función de la HORA.
     */
     Pc = 0 // Potencia de calefacción por metro cuadrado de superficie construida [W/m2]
-    if  then
-    end
 endfunction
 
 precioEnergiaCalefaccion = 1.6*0.0045/1000/0.8 // [dólares/Wh]
