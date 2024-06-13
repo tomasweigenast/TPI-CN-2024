@@ -38,9 +38,6 @@ FinSubida = 11 //"Hora en la que empieza a incrementar la temperatura"
 InicioBajada = 14 //"Hora en la que empieza a decrementar la temperatura"
 FinBajada = 19 //"Hora en la que empieza a decrementar la temperatura"
 
-inicioRefrigeracion = 11 // "Hora a la que se enciende la Refrigeracion"
-finRefrigeracion = 14 // "Hora a la que se apaga la refrigeración"
-
 superficieEdificacion=100 // [m2]
 superficiePiso=70 // [m2]
 
@@ -108,14 +105,14 @@ function T_ext = T_exterior(t)
         Función que toma el tiempo en HORAS y devuelve 
         la TEMPERATURA EXTERIOR en C° 
     */
-    if t <= InicioSubida*3600 then
+    if t <= InicioSubida then
         T_ext = TAmbMin;
-    elseif t <= FinSubida*3600 then
-        T_ext = ((TAmbMax - TAmbMin)/(FinSubida - InicioSubida))*(t/3600 - InicioSubida) + TAmbMin;
-    elseif t <= InicioBajada*3600 then
+    elseif t <= FinSubida then
+        T_ext = ((TAmbMax - TAmbMin)/(FinSubida - InicioSubida))*(t - InicioSubida) + TAmbMin;
+    elseif t <= InicioBajada then
         T_ext = TAmbMax;
-    elseif t <= FinBajada*3600 then
-        T_ext = ((TAmbMin - TAmbMax)/(FinBajada - InicioBajada))*(t/3600 - InicioBajada) + TAmbMax;
+    elseif t <= FinBajada then
+        T_ext = ((TAmbMin - TAmbMax)/(FinBajada - InicioBajada))*(t - InicioBajada) + TAmbMax;
     else
         T_ext = TAmbMin;
     end
@@ -201,3 +198,23 @@ endfunction
         (4) Calcular el calor de calefacción y refrigeración. (2 Puntos)
         (5) Calcular los costos de calefacción y refrigeración (2 Puntos)
 *******************************************/
+
+t = [0]
+T_ext = [T_exterior(0)]
+
+Dt = 1/60;
+
+N = 24/Dt ; // Numero de pasos
+
+
+for i = 1:N,
+    t = [t, t($)+Dt]
+    T_ext = [T_ext, T_exterior(t($))]
+end
+
+plot(t,T_ext)
+objeto_grafico = gca()
+objeto_grafico.data_bounds=[0,24,0,35]
+xlabel("hora")
+ylabel("temperatura exterior")
+
