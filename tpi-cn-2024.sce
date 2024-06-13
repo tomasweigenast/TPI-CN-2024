@@ -6,7 +6,7 @@ clc
 // -----------------------------------
 // SE PUEDE MODIFICAR DENTRO DEL 
 // INTERVALO ADMITIDO POR EL PROCESO
-T_ini = 22;
+T_ini = 20;
 //************************************
 
 /************************************
@@ -27,12 +27,12 @@ T_ini = 22;
 
 // PARA MODIFICAR: Colocar el valor de h obtenido
 // por regresión de los datos experimentales.
-h = 1 // coeficiente de transferencia de calor por convección de la edificación a la velocidad de 3 m/s del aire
+h = 18 // coeficiente de transferencia de calor por convección de la edificación a la velocidad de 3 m/s del aire
 
 
 
-TAmbMax = 32 //"Máxima Temperatura Ambiente"
-TAmbMin = 10 //"Mínima Temperatura Ambiente"
+TAmbMax = 29 //"Máxima Temperatura Ambiente"
+TAmbMin = 7 //"Mínima Temperatura Ambiente"
 InicioSubida = 6 //"Hora en la que empieza a incrementar la temperatura"
 FinSubida = 11 //"Hora en la que empieza a incrementar la temperatura"
 InicioBajada = 14 //"Hora en la que empieza a decrementar la temperatura"
@@ -66,7 +66,9 @@ function Pc = potenciaCalefaccionUnitaria(t)
         Esta función debe devolver la POTENCIA DE CALEFACCIÓN por
         m2 de edificio, en función de la HORA.
     */
-    Pc = 1 // Potencia de calefacción por metro cuadrado de superficie construida [W/m2]
+    Pc = 0 // Potencia de calefacción por metro cuadrado de superficie construida [W/m2]
+    if  then
+    end
 endfunction
 
 precioEnergiaCalefaccion = 1.6*0.0045/1000/0.8 // [dólares/Wh]
@@ -94,7 +96,7 @@ function Pr = potenciaRefrigeracionUnitaria(t)
         IMPORTANTE: Expresamos la potencia con signo POSITIVO, ya que 
         se trata del calor que EXTRAE el refrigerador del interior.
     */
-    Pr = 1 // Potencia de refrigeración por metro cuadrado de superficie construida [W/m2]
+    Pr = 0 // Potencia de refrigeración por metro cuadrado de superficie construida [W/m2]
 endfunction
 
 precioEnergiaRefrigeracion = 0.12/1000 // [dólares/Wh]
@@ -187,16 +189,14 @@ endfunction
             del coeficiente de transferencia por
             convección.
             Y obtener el coeficiente para la 
-            velocidad del aire del lugar. (2 Puntos)
+            velocidad del aire del lugar. (2.5 Puntos)
         (2) Obtener la Temperatura Interior
             (Verificar que se cumplan las
              condiciones necesarias del proceso
              y que la temperatura al final
-             del día sea igual a la inicial) (2 Puntos)
-        (3) Calcular los calores intercambiados por
-            por el piso y escrutura del edificio (2 Puntos)
-        (4) Calcular el calor de calefacción y refrigeración. (2 Puntos)
-        (5) Calcular los costos de calefacción y refrigeración (2 Puntos)
+             del día sea igual a la inicial) (2.5 Puntos)
+        (3) Calcular el calor de calefacción y refrigeración. (2.5 Puntos)
+        (4) Calcular los costos de calefacción y refrigeración (2.5 Puntos)
 *******************************************/
 
 t = [0]
@@ -212,9 +212,10 @@ for i = 1:N,
     T_ext = [T_ext, T_exterior(t($))]
 end
 
-plot(t,T_ext)
+
+plot(t,T_ext,'b')
 objeto_grafico = gca()
 objeto_grafico.data_bounds=[0,24,0,35]
-xlabel("hora")
-ylabel("temperatura exterior")
+xlabel("Hora del día")
+ylabel("Temperatura Exterior")
 
