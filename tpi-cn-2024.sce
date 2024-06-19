@@ -1,5 +1,6 @@
 clear
 clc
+clf();
 
 //************************************
 // CONDICIÓN INICIAL DEL INTERIOR
@@ -27,12 +28,13 @@ T_ini = 22;
 
 // PARA MODIFICAR: Colocar el valor de h obtenido
 // por regresión de los datos experimentales.
-h = 1 // coeficiente de transferencia de calor por convección de la edificación a la velocidad de 3 m/s del aire
+// valor con regresion lineal
+h = 18.037 // coeficiente de transferencia de calor por convección de la edificación a la velocidad de 3 m/s del aire
 
 
 
-TAmbMax = 32 //"Máxima Temperatura Ambiente"
-TAmbMin = 10 //"Mínima Temperatura Ambiente"
+TAmbMax = 29 //"Máxima Temperatura Ambiente"
+TAmbMin = 7 //"Mínima Temperatura Ambiente"
 InicioSubida = 6 //"Hora en la que empieza a incrementar la temperatura"
 FinSubida = 11 //"Hora en la que empieza a incrementar la temperatura"
 InicioBajada = 14 //"Hora en la que empieza a decrementar la temperatura"
@@ -66,7 +68,14 @@ function Pc = potenciaCalefaccionUnitaria(t)
         Esta función debe devolver la POTENCIA DE CALEFACCIÓN por
         m2 de edificio, en función de la HORA.
     */
-    Pc = 1 // Potencia de calefacción por metro cuadrado de superficie construida [W/m2]
+    // Potencia de calefacción por metro cuadrado de superficie construida [W/m2]
+    if(t>0 && t<8)
+        Pc = 8
+    elseif(t > 16)
+        Pc = t*1.5
+    else          
+        Pc = 0
+    end
 endfunction
 
 precioEnergiaCalefaccion = 1.6*0.0045/1000/0.8 // [dólares/Wh]
@@ -94,7 +103,8 @@ function Pr = potenciaRefrigeracionUnitaria(t)
         IMPORTANTE: Expresamos la potencia con signo POSITIVO, ya que 
         se trata del calor que EXTRAE el refrigerador del interior.
     */
-    Pr = 1 // Potencia de refrigeración por metro cuadrado de superficie construida [W/m2]
+    // Potencia de refrigeración por metro cuadrado de superficie construida [W/m2]
+    Pr = 0
 endfunction
 
 precioEnergiaRefrigeracion = 0.12/1000 // [dólares/Wh]
@@ -187,34 +197,85 @@ endfunction
             del coeficiente de transferencia por
             convección.
             Y obtener el coeficiente para la 
-            velocidad del aire del lugar. (2 Puntos)
+            velocidad del aire del lugar. (2.5 Puntos)
         (2) Obtener la Temperatura Interior
             (Verificar que se cumplan las
              condiciones necesarias del proceso
              y que la temperatura al final
-             del día sea igual a la inicial) (2 Puntos)
-        (3) Calcular los calores intercambiados por
-            por el piso y escrutura del edificio (2 Puntos)
-        (4) Calcular el calor de calefacción y refrigeración. (2 Puntos)
-        (5) Calcular los costos de calefacción y refrigeración (2 Puntos)
+             del día sea igual a la inicial) (2.5 Puntos) (euler)
+        (3) Calcular el calor de calefacción y refrigeración. (2.5 Puntos)
+        (4) Calcular los costos de calefacción y refrigeración (2.5 Puntos)
 *******************************************/
 
-t = [0]
-T_ext = [T_exterior(0)]
 
-Dt = 1/60;
+function Integral = calcular_calefaccion_total()
+    paso = 0.001
+    x = 0:paso:24
+    X = []
+    for i = 0:paso:24
+        X = [X, Q_calef(i)]
+    end
+    Integral = inttrap(x,X)
+endfunction
 
-N = 24/Dt ; // Numero de pasos
+function Integral = calcular_refrigeracion_total()
+    paso = 0.001
+    x = 0:paso:24
+    X = []
+    for i = 0:paso:24
+        X = [X, Q_refri(i)]
+    end
+    Integral = inttrap(x,X)
+endfunction
+
+function calcular_temperatura_interior()
+    t = [0]
+    T = [T_ini]
+    
+    paso = 10/60;
+    N = 24/paso
+    
+    for i = 1:N,
+        Ti = T(i) + paso * 3600 * f(t($), T($));
+        t = [t, t($)+paso]
+        T = [T, Ti]
+    end
+    
+    plot(t,T)
+endfunction
 
 
-for i = 1:N,
-    t = [t, t($)+Dt]
-    T_ext = [T_ext, T_exterior(t($))]
-end
+function calcular_temperatura_exterior()
+    t = [0]
+    T_ext = [T_exterior(0)]
+    
+    Dt = 1/60;
+    
+    N = 24/Dt ; // Numero de pasos
+    
+    
+    for i = 1:N,
+        t = [t, t($)+Dt]
+        T_ext = [T_ext, T_exterior(t($))]
+    end
+    
+    plot(t,T_ext)
+    objeto_grafico = gca()
+    objeto_grafico.data_bounds=[0,24,0,35]
+    xlabel("hora")
+    ylabel("temperatura exterior")
+endfunction
 
-plot(t,T_ext)
-objeto_grafico = gca()
-objeto_grafico.data_bounds=[0,24,0,35]
-xlabel("hora")
-ylabel("temperatura exterior")
+calcular_temperatura_interior()
+calcular_temperatura_exterior()
 
+refri_total = calcular_refrigeracion_total()
+calef_total = calcular_calefaccion_total()
+disp("Refrigeración total: "+string(refri_total))
+disp("Calefacción total: "+string(calef_total))
+
+costo_refri = refri_total * precioEnergiaRefrigeracion
+costo_calef = calef_total * precioEnergiaCalefaccion
+disp("Costo refrigeración: $"+string(costo_refri))
+disp("Costo calefacción: $"+string(costo_calef))
+disp("Costo total: $"+string(costo_refri+costo_calef))
