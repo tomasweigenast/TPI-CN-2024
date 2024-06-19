@@ -267,7 +267,7 @@ function calcular_temperatura_exterior()
 endfunction
 
 calcular_temperatura_interior()
-calcular_temperatura_exterior()
+//calcular_temperatura_exterior()
 
 refri_total = calcular_refrigeracion_total()
 calef_total = calcular_calefaccion_total()
