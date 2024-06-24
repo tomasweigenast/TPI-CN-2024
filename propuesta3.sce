@@ -7,7 +7,7 @@ clf();
 // -----------------------------------
 // SE PUEDE MODIFICAR DENTRO DEL 
 // INTERVALO ADMITIDO POR EL PROCESO
-T_ini = 21;
+T_ini = 20;
 //************************************
 
 /************************************
@@ -69,13 +69,13 @@ function Pc = potenciaCalefaccionUnitaria(t)
         m2 de edificio, en función de la HORA.
     */
     // Potencia de calefacción por metro cuadrado de superficie construida [W/m2]
-    if(t > 2.9 && t <4.6)
-        Pc = 60;
-    elseif(t > 20.7 && t <= 24)
-        Pc = 42.7;
-     else
+    if(t >= 0 && t <= 8)
+        Pc = 20;
+    elseif (t >= 17&& t <=24)
+        Pc = 25.23;
+    else
         Pc = 0;
-     end
+    end
 endfunction
 
 precioEnergiaCalefaccion = 1.6*0.0045/1000/0.8 // [dólares/Wh]
@@ -97,14 +97,18 @@ precioEnergiaCalefaccion = 1.6*0.0045/1000/0.8 // [dólares/Wh]
 ------------------------------------------ */
 function Pr = potenciaRefrigeracionUnitaria(t)
     /*
-        PARA MODIFICAR:
+        PARA MODIFICAR: 
         Esta función debe devolver la POTENCIA DE REFRIGERACIÓN por
         m2 de edificio, en función de la HORA.
         IMPORTANTE: Expresamos la potencia con signo POSITIVO, ya que 
         se trata del calor que EXTRAE el refrigerador del interior.
     */
     // Potencia de refrigeración por metro cuadrado de superficie construida [W/m2]
-    Pr = 0
+    if(t > 10 && t < 16)
+        Pr = 10;
+    else
+        Pr = 0;
+    end
 endfunction
 
 precioEnergiaRefrigeracion = 0.12/1000 // [dólares/Wh]
@@ -258,12 +262,6 @@ function calcular_temperatura_exterior()
         t = [t, t($)+Dt]
         T_ext = [T_ext, T_exterior(t($))]
     end
-    
-    plot(t,T_ext)
-    objeto_grafico = gca()
-    objeto_grafico.data_bounds=[0,24,0,35]
-    xlabel("hora")
-    ylabel("temperatura exterior")
 endfunction
 
 calcular_temperatura_interior()
